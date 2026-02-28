@@ -1,0 +1,16 @@
+# API credentials - NEVER share these
+credentials/
+token.json
+
+# Personal sender configuration - NEVER share this
+config.py
+
+# Downloaded invoices (personal data)
+invoices/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# macOS system files
+.DS_Store
