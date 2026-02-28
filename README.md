@@ -1,6 +1,8 @@
 # Gmail Invoice Downloader
 
-A Python script that automatically downloads invoice PDFs from Gmail and organises them into monthly folders.
+> Stop hunting through your inbox for invoice PDFs. This script does it for you.
+
+Automatically searches Gmail for invoice emails from your configured senders, downloads the PDF attachments, and saves them into organised monthly folders.
 
 ## What it does
 
@@ -8,9 +10,7 @@ A Python script that automatically downloads invoice PDFs from Gmail and organis
 - Downloads PDF attachments
 - Saves them into organised monthly folders like `invoices/2026-01/`
 - Skips invoices already downloaded — safe to run every month
-- Supports a month offset for senders who bill in arrears (e.g. Google sends a February email for a January billing period)
-
-## Folder structure
+- Supports a month offset for senders who bill in arrears (e.g. a February email for a January billing period)
 
 ```
 invoices/
@@ -57,10 +57,14 @@ Open `config.py` and fill in your senders:
 START_DATE = "2026/01/01"
 
 SEARCH_QUERIES = [
-    ("Google", "from:payments-noreply@google.com has:attachment after:2026/01/01", -1),
-    ("My Host", "from:billing@myhost.com has:attachment after:2026/01/01", 0),
+    ("Sender 1", f"from:billing@example.com has:attachment after:{START_DATE}", 0),
+    ("Sender 2", f"from:invoices@example.com has:attachment after:{START_DATE}", -1),
 ]
 ```
+
+The third value in each entry is the `month_offset`:
+- `0` — invoice is for the same month the email arrived
+- `-1` — invoice is for the previous month (for senders who bill in arrears)
 
 > **Tip:** Test your search query in Gmail's search bar first to confirm it finds the right emails.
 
@@ -79,16 +83,24 @@ The first time you run it, a browser window opens asking you to grant Gmail read
 ```
 Connecting to Gmail...
 
---- Searching for Google invoices ---
-Found 2 email(s) from Google.
+--- Searching for Sender 1 invoices ---
+Found 2 email(s) from Sender 1.
   Saved: invoices/2026-01/invoice_jan.pdf
 
---- Searching for My Host invoices ---
-Found 1 email(s) from My Host.
+--- Searching for Sender 2 invoices ---
+Found 1 email(s) from Sender 2.
   Saved: invoices/2026-02/invoice_feb.pdf
 
 === Done! Downloaded 2 invoice(s) total. ===
 ```
+
+## Scheduling
+
+The script runs on macOS, Linux, and Windows. To run it automatically every month, use your OS's built-in scheduler:
+
+- **macOS** — `launchd` (via a `.plist` file in `~/Library/LaunchAgents/`)
+- **Linux** — `cron` (`crontab -e`)
+- **Windows** — Task Scheduler
 
 ## Security
 
